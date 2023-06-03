@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import Optional
 
 class ClientName(BaseModel):
@@ -21,6 +21,12 @@ class ClientCreate(BaseModel):
     nombre_cliente: ClientName
     telefono: str = Field(description="El numero debe ser de 10 digitos.", min_length=10, max_length=10)
     edad: int = Field(ge=18, description="Debes ser mayor de edad para registrarte.")
+
+    @validator("telefono", always=True)
+    def check_storage_type(cls, value):
+        if not value.isdigit():
+            raise ValueError("Ingrese solamente numeros.")
+        return value
 
     class Config:
         orm_mode = True
